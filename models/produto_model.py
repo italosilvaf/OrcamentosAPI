@@ -1,6 +1,5 @@
 from core.configs import settings
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, func
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, DateTime, Float, ForeignKey,func
 
 
 class ProdutoModel(settings.DBBaseModel):

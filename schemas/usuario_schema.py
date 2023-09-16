@@ -1,5 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel, EmailStr
+from datetime import datetime
 
 
 class UsuarioSchemaBase(BaseModel):
@@ -7,13 +8,15 @@ class UsuarioSchemaBase(BaseModel):
     nome: str
     telefone: str
     email: EmailStr
-    eh_admin: bool = False
+    permissao_id: Optional[int] 
 
     class Config:
         orm_mode = True
 
 
-class UsuarioSchemaCreate(UsuarioSchemaBase):
+class UsuarioSchema(UsuarioSchemaBase):
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
     senha: str
 
 
@@ -22,5 +25,5 @@ class UsuarioSchemaUp(UsuarioSchemaBase):
     telefone: Optional[str]
     email: Optional[EmailStr]
     senha: Optional[str]
-    eh_admin: Optional[bool]
+    permissao_id: Optional[int]
     
