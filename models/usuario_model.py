@@ -1,5 +1,7 @@
 from core.configs import settings
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, func
+from sqlalchemy.orm import relationship
+from models.permissao_model import PermissaoModel
 
 
 class UsuarioModel(settings.DBBaseModel):
@@ -12,5 +14,5 @@ class UsuarioModel(settings.DBBaseModel):
     telefone = Column(String(11), nullable=True)
     email = Column(String(255), index=True, nullable=True, unique=True)
     senha = Column(String(255), nullable=True)
-    permissao_id = Column(Integer, ForeignKey('permissao.id'))
-    
+    permissao_id = Column(Integer, ForeignKey('permissoes.id'))
+    permissao = relationship('PermissaoModel', back_populates='usuarios', lazy='joined')

@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.exc import IntegrityError
+from pydantic import ValidationError
 from models.usuario_model import UsuarioModel
 from schemas.usuario_schema import UsuarioSchemaBase, UsuarioSchema, UsuarioSchemaUp
 from core.deps import get_session, get_current_user
@@ -33,12 +34,12 @@ async def post_usuario(usuario: UsuarioSchema, db: AsyncSession = Depends(get_se
 
             return novo_usuario
         except IntegrityError:
-            raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE,
-                                detail="Já existe um usuário com esse e-mail cadastrado.")
+            raise HTTPException(detail="Já existe um usuário com esse e-mail cadastrado.",
+                                status_code=status.HTTP_406_NOT_ACCEPTABLE)
         
 
 # GET Usuarios
-@router.get('/', response_model=List[UsuarioSchemaBase])
+@router.get('/', response_model=List[UsuarioSchema])
 async def get_usuarios(db: AsyncSession = Depends(get_session), usuario_logado: UsuarioModel = Depends(get_current_user)):
     async with db as session:
         query = select(UsuarioModel)
@@ -57,14 +58,14 @@ async def get_usuarios(db: AsyncSession = Depends(get_session), usuario_logado: 
 
 
 # GET Usuario
-@router.get('/{usuario_id}', response_model=UsuarioSchemaBase, status_code=status.HTTP_200_OK)
+@router.get('/{usuario_id}', response_model=UsuarioSchema, status_code=status.HTTP_200_OK)
 async def get_usuario(usuario_id: int, usuario_logado: UsuarioModel = Depends(get_current_user), db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(UsuarioModel).filter(UsuarioModel.id == usuario_id)
         result = await session.execute(query)
         usuario: UsuarioSchemaBase = result.scalars().unique().one_or_none()
 
-        if usuario_logado.permissao_id == 3 and usuario_logado.id != usuario.id:
+        if usuario_logado.permissao_id == 3 and usuario_logado.id != usuario_id:
             raise HTTPException(detail='O usuário logado não tem permissão para ver essas informações',
                                 status_code=status.HTTP_401_UNAUTHORIZED)
 
@@ -83,7 +84,7 @@ async def put_usuario(usuario_id: int, usuario: UsuarioSchemaUp, usuario_logado:
         result = await session.execute(query)
         usuario_up: UsuarioSchemaBase = result.scalars().unique().one_or_none()
 
-        if usuario_logado.id != usuario_id.id and usuario_logado.permissao_id != 1:
+        if usuario_logado.id != usuario_id and usuario_logado.permissao_id != 1:
             raise HTTPException(detail='O usuário logado não tem permissão para modificar este usuário.',
                                 status_code=status.HTTP_401_UNAUTHORIZED)
 
@@ -96,14 +97,11 @@ async def put_usuario(usuario_id: int, usuario: UsuarioSchemaUp, usuario_logado:
                 usuario_up.email = usuario.email
             if usuario.senha:
                 usuario_up.senha = gerar_hash_senha(usuario.senha)
-                
-            if usuario_logado.permissao_id == 1:
-                if usuario.permissao_id:
-                    usuario_up.permissao_id = usuario.permissao_id
-            else:
-                raise HTTPException(detail='O usuário logado não tem permissão para modificar as permissões deste usuário.',
-                                status_code=status.HTTP_401_UNAUTHORIZED)
-            
+            if usuario.permissao_id:
+                if usuario_logado.permissao_id != 1:
+                    raise HTTPException(detail='O usuário logado não tem permissão para modificar a permissão deste usuário.',
+                                        status_code=status.HTTP_401_UNAUTHORIZED)
+                usuario_up.permissao_id = usuario.permissao_id
             try:
                 await session.commit()
                 return usuario_up
@@ -116,14 +114,14 @@ async def put_usuario(usuario_id: int, usuario: UsuarioSchemaUp, usuario_logado:
 
 
 # DELETE Usuario
-@router.get('/{usuario_id}', status_code=status.HTTP_204_NO_CONTENT)
+@router.delete('/{usuario_id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_usuario(usuario_id: int, usuario_logado: UsuarioModel = Depends(get_current_user), db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(UsuarioModel).filter(UsuarioModel.id == usuario_id)
         result = await session.execute(query)
         usuario_del: UsuarioSchemaBase = result.scalars().unique().one_or_none()
 
-        if usuario_logado.id != usuario_id.id and usuario_logado.permissao_id != 1:
+        if usuario_logado.id != usuario_id and usuario_logado.permissao_id != 1:
             raise HTTPException(detail='O usuário logado não tem permissão para deletar este usuário.',
                                 status_code=status.HTTP_401_UNAUTHORIZED)
 
@@ -143,7 +141,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSessi
     usuario = await autenticar(email=form_data.username, senha=form_data.password, db=db)
 
     if not usuario:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail='Dados de acesso incorretos.')
+        raise HTTPException(detail='Dados de acesso incorretos.',
+                            status_code=status.HTTP_400_BAD_REQUEST)
     
     return JSONResponse(content={"access_token": criar_token_acesso(sub=usuario.id), "token_type": "bearer"}, status_code=status.HTTP_200_OK)

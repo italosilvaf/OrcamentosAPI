@@ -14,6 +14,7 @@ async def criar_tabelas() -> None:
         await conn.run_sync(settings.DBBaseModel.metadata.create_all)
     print('Tabelas criadas com sucesso.')
 
+
 async def criar_permissoes() -> None:
     print('Criando as permissões no banco de dados.')
     async_session = sessionmaker(
