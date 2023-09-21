@@ -4,17 +4,23 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
 from models.categoria_model import CategoriaModel
+from models.usuario_model import UsuarioModel
 from schemas.categoria_schema import CategoriaSchemaBase, CategoriaSchema, CategoriaSchemaUp
-from core.deps import get_session
+from core.deps import get_session, get_current_user
 
 
 router = APIRouter()
 
 
 # POST Categoria
-@router.post('/', response_model=CategoriaSchemaBase, status_code=status.HTTP_201_CREATED)
-async def post_categoria(categoria: CategoriaSchemaBase, db: AsyncSession= Depends(get_session)):
+@router.post('/', response_model=CategoriaSchema, status_code=status.HTTP_201_CREATED)
+async def post_categoria(categoria: CategoriaSchemaBase, usuario_logado: UsuarioModel = Depends(get_current_user),
+                         db: AsyncSession= Depends(get_session)):
     nova_categoria = CategoriaModel(nome=categoria.nome)
+
+    if usuario_logado.permissao_id != 1:
+        raise HTTPException(detail='O usuário logado não tem permissão para criar categorias.',
+                                status_code=status.HTTP_401_UNAUTHORIZED)
 
     async with db as session:
         try:
@@ -56,13 +62,17 @@ async def get_categoria(categoria_id: int, db: AsyncSession = Depends(get_sessio
                                 status_code=status.HTTP_404_NOT_FOUND)
         
 # PUT Categoria
-@router.put('/{categoria_id}', response_model=CategoriaSchemaBase, status_code=status.HTTP_202_ACCEPTED)
-async def put_categoria(categoria_id: int, categoria: CategoriaSchemaUp, db: AsyncSession = Depends(get_session)):
+@router.put('/{categoria_id}', response_model=CategoriaSchema, status_code=status.HTTP_202_ACCEPTED)
+async def put_categoria(categoria_id: int, categoria: CategoriaSchemaUp, usuario_logado: UsuarioModel = Depends(get_current_user),
+                        db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(CategoriaModel).filter(CategoriaModel.id == categoria_id)
         result = await session.execute(query)
         categoria_up: CategoriaModel = result.scalars().unique().one_or_none()
 
+        if usuario_logado.permissao_id != 1:
+            raise HTTPException(detail='O usuário logado não tem permissão para editar categorias.',
+                                    status_code=status.HTTP_401_UNAUTHORIZED)
         if categoria_up:
             if categoria.nome:
                 categoria_up.nome = categoria.nome
@@ -77,11 +87,15 @@ async def put_categoria(categoria_id: int, categoria: CategoriaSchemaUp, db: Asy
 
 # DELETE Categoria
 @router.delete('/{categoria_id}', status_code=status.HTTP_204_NO_CONTENT)
-async def delete_produto(categoria_id: int, db: AsyncSession = Depends(get_session)):
+async def delete_produto(categoria_id: int, usuario_logado: UsuarioModel = Depends(get_current_user), db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(CategoriaModel).filter(CategoriaModel.id == categoria_id)
         result = await session.execute(query)
         categoria_del: CategoriaModel = result.scalars().unique().one_or_none()
+
+        if usuario_logado.permissao_id != 1:
+            raise HTTPException(detail='O usuário logado não tem permissão para deletar categorias.',
+                                    status_code=status.HTTP_401_UNAUTHORIZED)
 
         if categoria_del:
             await session.delete(categoria_del)
