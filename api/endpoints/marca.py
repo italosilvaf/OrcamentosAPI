@@ -56,7 +56,7 @@ async def get_marca(marca_id: int, db: AsyncSession = Depends(get_session)):
                                 status_code=status.HTTP_404_NOT_FOUND)
         
 # PUT Marca
-@router.put('/{marca_id}', response_model=MarcaSchema, status_code=status.HTTP_202_ACCEPTED)
+@router.put('/{marca_id}', response_model=MarcaSchemaBase, status_code=status.HTTP_202_ACCEPTED)
 async def put_marca(marca_id: int, marca: MarcaSchemaUp, usuario_logado: UsuarioModel = Depends(get_current_user), 
                     db: AsyncSession = Depends(get_session)):
     

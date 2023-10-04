@@ -24,7 +24,7 @@ def get_logado(usuario_logado: UsuarioModel = Depends(get_current_user)):
 
 # POST Usuario / Signup
 @router.post('/signup', status_code=status.HTTP_201_CREATED, response_model=UsuarioSchema)
-async def post_usuario(usuario: UsuarioSchemaBase, db: AsyncSession = Depends(get_session)):
+async def post_usuario(usuario: UsuarioSchema, db: AsyncSession = Depends(get_session)):
     novo_usuario: UsuarioModel = UsuarioModel(nome=usuario.nome, telefone=usuario.telefone,
                                               email=usuario.email, senha=gerar_hash_senha(usuario.senha), permissao_id=usuario.permissao_id)
     async with db as session:
@@ -77,7 +77,7 @@ async def get_usuario(usuario_id: int, usuario_logado: UsuarioModel = Depends(ge
 
 
 # PUT Usuario
-@router.put('/{usuario_id}', response_model=UsuarioSchema, status_code=status.HTTP_202_ACCEPTED)
+@router.put('/{usuario_id}', response_model=UsuarioSchemaBase, status_code=status.HTTP_202_ACCEPTED)
 async def put_usuario(usuario_id: int, usuario: UsuarioSchemaUp, usuario_logado: UsuarioModel = Depends(get_current_user), db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(UsuarioModel).filter(UsuarioModel.id == usuario_id)

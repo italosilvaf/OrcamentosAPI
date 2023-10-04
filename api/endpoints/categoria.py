@@ -62,7 +62,7 @@ async def get_categoria(categoria_id: int, db: AsyncSession = Depends(get_sessio
                                 status_code=status.HTTP_404_NOT_FOUND)
         
 # PUT Categoria
-@router.put('/{categoria_id}', response_model=CategoriaSchema, status_code=status.HTTP_202_ACCEPTED)
+@router.put('/{categoria_id}', response_model=CategoriaSchemaBase, status_code=status.HTTP_202_ACCEPTED)
 async def put_categoria(categoria_id: int, categoria: CategoriaSchemaUp, usuario_logado: UsuarioModel = Depends(get_current_user),
                         db: AsyncSession = Depends(get_session)):
     async with db as session:

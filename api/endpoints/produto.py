@@ -65,7 +65,7 @@ async def get_produto(produto_id: int, db: AsyncSession = Depends(get_session)):
 
 
 # PUT Produto
-@router.put('/{produto_id}', response_model=ProdutoSchema, status_code=status.HTTP_202_ACCEPTED)
+@router.put('/{produto_id}', response_model=ProdutoSchemaBase, status_code=status.HTTP_202_ACCEPTED)
 async def put_produto(produto_id: int, produto: ProdutoSchemaUp, usuario_logado: UsuarioModel = Depends(get_current_user), db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(ProdutoModel).filter(ProdutoModel.id == produto_id)
