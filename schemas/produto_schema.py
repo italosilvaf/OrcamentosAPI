@@ -6,7 +6,7 @@ from datetime import datetime
 class ProdutoSchemaBase(BaseModel):
     id: Optional[int] = None
     nome: str
-    nome_referencia: str
+    nome_referencia: Optional[str]
     codigo: str
     marca_id: Optional[int]
     categoria_id: Optional[int]

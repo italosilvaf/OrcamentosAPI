@@ -9,5 +9,5 @@ class PermissaoModel(settings.DBBaseModel):
     id = Column(Integer, primary_key=True, autoincrement=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    nome = Column(String(20), unique=True, nullable=True)
+    nome = Column(String(20), unique=True)
     usuarios = relationship("UsuarioModel", back_populates='permissao', lazy='joined')
