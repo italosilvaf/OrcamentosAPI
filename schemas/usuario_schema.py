@@ -5,6 +5,8 @@ from datetime import datetime
 
 class UsuarioSchemaBase(BaseModel):
     id: Optional[int] = None
+    nome: str
+    telefone: str
     email: EmailStr
     permissao_id: Optional[int] 
 
@@ -19,6 +21,8 @@ class UsuarioSchema(UsuarioSchemaBase):
 
 
 class UsuarioSchemaUp(UsuarioSchemaBase):
+    nome: Optional[str]
+    telefone: Optional[str]
     email: Optional[EmailStr]
     senha: Optional[str]
     permissao_id: Optional[int]
