@@ -3,6 +3,7 @@ from core.database import engine
 from models.categoria_model import CategoriaModel
 from models.marca_model import MarcaModel
 from models.produto_model import ProdutoModel
+from models.usuario_model import UsuarioModel
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -16,7 +17,6 @@ async_session = sessionmaker(
 async def adicionar_categorias(async_session) -> None:
     print('-'*100)
     print('Criando as categorias no banco de dados.')
-    print('-'*100)
     
     async with async_session as session:
         categortia_toneira = CategoriaModel(nome='Torneira')
@@ -32,7 +32,7 @@ async def adicionar_categorias(async_session) -> None:
         session.add(categortia_porcelanato_acetinado)
         
         await session.commit()
-    print('-'*100)
+
     print('Categorias criadas com sucesso.')
     print('-'*100)
 
@@ -40,7 +40,6 @@ async def adicionar_categorias(async_session) -> None:
 async def adicionar_marcas(async_session) -> None:
     print('-'*100)
     print('Criando as marcas no banco de dados.')
-    print('-'*100)
     
     async with async_session as session:
         marca_fani = MarcaModel(nome='Fani')
@@ -56,7 +55,7 @@ async def adicionar_marcas(async_session) -> None:
         session.add(marca_eliane)
         
         await session.commit()
-    print('-'*100)
+
     print('Marcas criadas com sucesso.')
     print('-'*100)
 
@@ -64,9 +63,7 @@ async def adicionar_marcas(async_session) -> None:
 async def adicionar_produtos(async_session) -> None:
     print('-'*100)
     print('Criando os produtos no banco de dados.')
-    print('-'*100)
 
-    
     async with async_session as session:
 
         # Torneira Fani
@@ -247,15 +244,36 @@ async def adicionar_produtos(async_session) -> None:
         session.add(porcelanato_acetinado_eliane_5)
 
         await session.commit()
-    print('-'*100)
+
     print('Produtos criados com sucesso.')
     print('-'*100)
+
+
+async def adicionar_usuarios(async_session) -> None:
+    print('-'*100)
+    print('Criando as usuários no banco de dados.')
+    
+    async with async_session as session:
+        usuario_admin = UsuarioModel(cpf='12221405609', nome='Italo', sobrenome='Silva Fernandes Admin', telefone='34992127233', email='italoadmin@email.com', senha='290302', permissao_id=1)
+        usuario_vendedor = UsuarioModel(cpf='12221405609', nome='Italo', sobrenome='Silva Fernandes Vendedor', telefone='34992127233', email='italovendedor@email.com', senha='290302', permissao_id=2)
+        usuario_cliente = UsuarioModel(cpf='12221405609', nome='Italo', sobrenome='Silva Fernandes Cliente', telefone='34992127233', email='italocliente@email.com', senha='290302', permissao_id=3)
+        
+        session.add(usuario_admin)
+        session.add(usuario_vendedor)
+        session.add(usuario_cliente)
+
+        await session.commit()
+        
+    print('Usuários criadas com sucesso.')
+    print('-'*100)
+
 
 async def main():
     async with async_session() as session:
         await adicionar_categorias(session)
         await adicionar_marcas(session)
         await adicionar_produtos(session)
+        await adicionar_usuarios(session)
 
 if __name__ == '__main__':
     import asyncio
