@@ -6,6 +6,7 @@ from models.produto_model import ProdutoModel
 from models.usuario_model import UsuarioModel
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
+from core.security import gerar_hash_senha
 
 async_session = sessionmaker(
     bind=create_async_engine(settings.DB_URL, echo=True),
@@ -254,16 +255,16 @@ async def adicionar_usuarios(async_session) -> None:
     print('Criando as usuários no banco de dados.')
     
     async with async_session as session:
-        usuario_admin = UsuarioModel(cpf='12221405609', nome='Italo', sobrenome='Silva Fernandes Admin', telefone='34992127233', email='italoadmin@email.com', senha='290302', permissao_id=1)
-        usuario_vendedor = UsuarioModel(cpf='12221405609', nome='Italo', sobrenome='Silva Fernandes Vendedor', telefone='34992127233', email='italovendedor@email.com', senha='290302', permissao_id=2)
-        usuario_cliente = UsuarioModel(cpf='12221405609', nome='Italo', sobrenome='Silva Fernandes Cliente', telefone='34992127233', email='italocliente@email.com', senha='290302', permissao_id=3)
+        usuario_admin = UsuarioModel(cpf='12221405609', nome='Italo', sobrenome='Silva Fernandes Admin', telefone='34992127233', email='italoadmin@email.com', senha=gerar_hash_senha('290302'), permissao_id=1)
+        usuario_vendedor = UsuarioModel(cpf='12221405609', nome='Italo', sobrenome='Silva Fernandes Vendedor', telefone='34992127233', email='italovendedor@email.com', senha=gerar_hash_senha('290302'), permissao_id=2)
+        usuario_cliente = UsuarioModel(cpf='12221405609', nome='Italo', sobrenome='Silva Fernandes Cliente', telefone='34992127233', email='italocliente@email.com', senha=gerar_hash_senha('290302'), permissao_id=3)
         
         session.add(usuario_admin)
         session.add(usuario_vendedor)
         session.add(usuario_cliente)
 
         await session.commit()
-        
+
     print('Usuários criadas com sucesso.')
     print('-'*100)
 
