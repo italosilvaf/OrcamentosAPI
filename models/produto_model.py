@@ -1,8 +1,6 @@
 from core.configs import settings
 from sqlalchemy import Column, Integer, String, DateTime, Float, ForeignKey,func
 from sqlalchemy.orm import relationship
-from models.marca_model import MarcaModel
-from models.categoria_model import CategoriaModel
 
 
 class ProdutoModel(settings.DBBaseModel):
