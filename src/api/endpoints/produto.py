@@ -38,7 +38,7 @@ async def post_produto(produto: ProdutoSchemaBase, usuario_logado: UsuarioModel 
 @router.get('/', response_model=List[ProdutoSchema], status_code=status.HTTP_200_OK)
 async def get_produtos(db: AsyncSession = Depends(get_session)):
     async with db as session:
-        query = select(ProdutoModel)
+        query = select(ProdutoModel).order_by(ProdutoModel.id)
         result = await session.execute(query)
         produtos: List[ProdutoModel] = result.scalars().unique().all()
         

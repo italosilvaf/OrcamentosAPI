@@ -30,7 +30,7 @@ async def post_marca(marca: MarcaSchemaBase, usuario_logado: UsuarioModel = Depe
 @router.get('/', response_model=List[MarcaSchema], status_code=status.HTTP_200_OK)
 async def get_produtos(db: AsyncSession = Depends(get_session)):
     async with db as session:
-        query = select(MarcaModel)
+        query = select(MarcaModel).order_by(MarcaModel.id)
         result = await session.execute(query)
         marcas: List[MarcaModel] = result.scalars().unique().all()
 

@@ -37,7 +37,7 @@ async def post_categoria(categoria: CategoriaSchemaBase, usuario_logado: Usuario
 @router.get('/', response_model=List[CategoriaSchema])
 async def get_produtos(db: AsyncSession = Depends(get_session)):
     async with db as session:
-        query = select(CategoriaModel)
+        query = select(CategoriaModel).order_by(CategoriaModel.id)
         result = await session.execute(query)
         categorias: List[CategoriaModel] = result.scalars().unique().all()
 

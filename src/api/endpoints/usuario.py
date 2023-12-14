@@ -42,7 +42,7 @@ async def post_usuario(usuario: UsuarioSchema, db: AsyncSession = Depends(get_se
 @router.get('/', response_model=List[UsuarioSchema])
 async def get_usuarios(db: AsyncSession = Depends(get_session), usuario_logado: UsuarioModel = Depends(get_current_user)):
     async with db as session:
-        query = select(UsuarioModel)
+        query = select(UsuarioModel).order_by(UsuarioModel.id)
         result = await session.execute(query)
         usuarios: List[UsuarioSchemaBase] = result.scalars().unique().all()
         
