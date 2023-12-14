@@ -25,7 +25,7 @@ def get_logado(usuario_logado: UsuarioModel = Depends(get_current_user)):
 # POST Usuario / Signup
 @router.post('/signup', status_code=status.HTTP_201_CREATED, response_model=UsuarioSchema)
 async def post_usuario(usuario: UsuarioSchema, db: AsyncSession = Depends(get_session)):
-    novo_usuario: UsuarioModel = UsuarioModel(nome=usuario.nome, telefone=usuario.telefone,
+    novo_usuario: UsuarioModel = UsuarioModel(cpf=usuario.cpf, nome=usuario.nome, sobrenome=usuario.sobrenome, telefone=usuario.telefone,
                                               email=usuario.email, senha=gerar_hash_senha(usuario.senha), permissao_id=usuario.permissao_id)
     async with db as session:
         try:
@@ -34,7 +34,7 @@ async def post_usuario(usuario: UsuarioSchema, db: AsyncSession = Depends(get_se
 
             return novo_usuario
         except IntegrityError:
-            raise HTTPException(detail="Já existe um usuário com esse e-mail cadastrado.",
+            raise HTTPException(detail="Dados de usuário inválidos.",
                                 status_code=status.HTTP_406_NOT_ACCEPTABLE)
         
 
@@ -89,8 +89,12 @@ async def put_usuario(usuario_id: int, usuario: UsuarioSchemaUp, usuario_logado:
                                 status_code=status.HTTP_401_UNAUTHORIZED)
 
         if usuario_up:
+            if usuario.cpf:
+                usuario_up.cpf = usuario.cpf
             if usuario.nome:
                 usuario_up.nome = usuario.nome
+            if usuario.sobrenome:
+                usuario_up.sobrenome = usuario.sobrenome
             if usuario.telefone:
                 usuario_up.telefone = usuario.telefone
             if usuario.email:
