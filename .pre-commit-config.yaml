@@ -7,9 +7,6 @@ repos:
       - id: check-yaml
       - id: debug-statements
       - id: double-quote-string-fixer
-      # - id: no-commit-to-branch
-        # args: [--branch, dev, --branch, main]
-        # args: [--branch, dev]
       - id: name-tests-test
         args: ['--pytest-test-first']
   - repo: https://github.com/python-poetry/poetry
@@ -26,7 +23,7 @@ repos:
         name: autoflake
         entry: autoflake
         language: python
-        "types": [python]
+        types: [python]
         require_serial: true
         args:
           - "--in-place"
