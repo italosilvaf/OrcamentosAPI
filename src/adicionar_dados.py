@@ -7,9 +7,7 @@ from src.models.categoria_model import CategoriaModel
 from src.models.marca_model import MarcaModel
 from src.models.produto_model import ProdutoModel
 from src.models.usuario_model import UsuarioModel
-from src.models.permissao_model import PermissaoModel
 
-ignorar = PermissaoModel()
 
 async_session = sessionmaker(
     bind=create_async_engine(settings.DB_URL, echo=True),
