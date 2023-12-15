@@ -1,12 +1,14 @@
 from typing import Generator, Optional
+
 from fastapi import Depends, HTTPException, status
-from jose import jwt, JWTError
+from jose import JWTError, jwt
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from pydantic import BaseModel
-from src.core.database import Session
+
 from src.core.auth import oauth2_schema
 from src.core.configs import settings
+from src.core.database import Session
 from src.models.usuario_model import UsuarioModel
 
 
@@ -23,11 +25,13 @@ async def get_session() -> Generator:
         await session.close()
 
 
-async def get_current_user(db: Session= Depends(get_session), token: str = Depends(oauth2_schema)) -> UsuarioModel:
+async def get_current_user(
+    db: Session = Depends(get_session), token: str = Depends(oauth2_schema)
+) -> UsuarioModel:
     credential_exception: HTTPException = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail='Não foi possível autenticar a credencial!',
-        headers={"WWW-Authenticate": "Bearer"}
+        detail="Não foi possível autenticar a credencial!",
+        headers={"WWW-Authenticate": "Bearer"},
     )
 
     try:
@@ -41,19 +45,17 @@ async def get_current_user(db: Session= Depends(get_session), token: str = Depen
         username: str = payload.get("sub")
         if username is None:
             raise credential_exception
-        
+
         token_data: TokenData = TokenData(username=username)
     except JWTError:
         raise credential_exception
-    
+
     async with db as session:
-        query = select(UsuarioModel).filter(
-            UsuarioModel.id == int(token_data.username)
-        )
+        query = select(UsuarioModel).filter(UsuarioModel.id == int(token_data.username))
         result = await session.execute(query)
         usuario: UsuarioModel = result.scalars().unique().one_or_none()
 
         if usuario is None:
             raise credential_exception
-        
+
         return usuario

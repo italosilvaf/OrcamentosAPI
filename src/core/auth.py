@@ -1,22 +1,23 @@
-from pytz import timezone
-from typing import Optional, List
 from datetime import datetime, timedelta
+from typing import Optional
+
 from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.future import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from jose import jwt
+from pydantic import EmailStr
+from pytz import timezone
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+
 from src.core.configs import settings
 from src.core.security import verificar_senha
-from pydantic import EmailStr
 from src.models.usuario_model import UsuarioModel
 
-
-oauth2_schema = OAuth2PasswordBearer(
-    tokenUrl=f'{settings.API_STR}/usuarios/login'
-)
+oauth2_schema = OAuth2PasswordBearer(tokenUrl=f"{settings.API_STR}/usuarios/login")
 
 
-async def autenticar(email: EmailStr, senha: str, db: AsyncSession) -> Optional[UsuarioModel]:
+async def autenticar(
+    email: EmailStr, senha: str, db: AsyncSession
+) -> Optional[UsuarioModel]:
     async with db as session:
         query = select(UsuarioModel).filter(UsuarioModel.email == email)
         result = await session.execute(query)
@@ -24,17 +25,17 @@ async def autenticar(email: EmailStr, senha: str, db: AsyncSession) -> Optional[
 
         if not usuario:
             return None
-        
+
         if not verificar_senha(senha, usuario.senha):
             return None
-        
+
         return usuario
-        
+
 
 def _criar_token(tipo_token: str, tempo_vida: timedelta, sub: str) -> str:
     payload = {}
 
-    sp = timezone('America/Sao_Paulo')
+    sp = timezone("America/Sao_Paulo")
     exepira = datetime.now(tz=sp) + tempo_vida
 
     payload["type"] = tipo_token
@@ -47,7 +48,7 @@ def _criar_token(tipo_token: str, tempo_vida: timedelta, sub: str) -> str:
 
 def criar_token_acesso(sub: str) -> str:
     return _criar_token(
-        tipo_token='access_token',
+        tipo_token="access_token",
         tempo_vida=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINURES),
-        sub=sub
+        sub=sub,
     )

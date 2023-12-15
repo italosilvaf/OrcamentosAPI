@@ -1,27 +1,41 @@
 from typing import List
-from fastapi import APIRouter, status, Depends, HTTPException, Response
-from sqlalchemy.ext.asyncio import AsyncSession
+
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+
+from src.core.deps import get_current_user, get_session
 from src.models.produto_model import ProdutoModel
 from src.models.usuario_model import UsuarioModel
-from src.schemas.produto_schema import ProdutoSchemaBase, ProdutoSchema, ProdutoSchemaUp
-from src.core.deps import get_session, get_current_user
-
+from src.schemas.produto_schema import (ProdutoSchema, ProdutoSchemaBase,
+                                        ProdutoSchemaUp)
 
 router = APIRouter()
 
 
 # POST Produto
-@router.post('/', response_model=ProdutoSchema, status_code=status.HTTP_201_CREATED)
-async def post_produto(produto: ProdutoSchemaBase, usuario_logado: UsuarioModel = Depends(get_current_user), db: AsyncSession= Depends(get_session)):
-    novo_produto: ProdutoModel = ProdutoModel(nome=produto.nome, nome_referencia=produto.nome_referencia, 
-                                              codigo=produto.codigo, marca_id=produto.marca_id, categoria_id=produto.categoria_id, 
-                                              unidade_de_venda=produto.unidade_de_venda, valor=produto.valor )
-    
+@router.post("/", response_model=ProdutoSchema, status_code=status.HTTP_201_CREATED)
+async def post_produto(
+    produto: ProdutoSchemaBase,
+    usuario_logado: UsuarioModel = Depends(get_current_user),
+    db: AsyncSession = Depends(get_session),
+):
+    novo_produto: ProdutoModel = ProdutoModel(
+        nome=produto.nome,
+        nome_referencia=produto.nome_referencia,
+        codigo=produto.codigo,
+        marca_id=produto.marca_id,
+        categoria_id=produto.categoria_id,
+        unidade_de_venda=produto.unidade_de_venda,
+        valor=produto.valor,
+    )
+
     if usuario_logado.permissao_id != 1:
-        raise HTTPException(detail='O usuário logado não tem permissão para criar produtos.',
-                                status_code=status.HTTP_401_UNAUTHORIZED)
+        raise HTTPException(
+            detail="O usuário logado não tem permissão para criar produtos.",
+            status_code=status.HTTP_401_UNAUTHORIZED,
+        )
 
     async with db as session:
         try:
@@ -30,27 +44,33 @@ async def post_produto(produto: ProdutoSchemaBase, usuario_logado: UsuarioModel 
 
             return novo_produto
         except IntegrityError:
-            raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE,
-                                detail='Já existe um produto cadastrado com este código.')
+            raise HTTPException(
+                status_code=status.HTTP_406_NOT_ACCEPTABLE,
+                detail="Já existe um produto cadastrado com este código.",
+            )
 
 
 # GET Produtos
-@router.get('/', response_model=List[ProdutoSchema], status_code=status.HTTP_200_OK)
+@router.get("/", response_model=List[ProdutoSchema], status_code=status.HTTP_200_OK)
 async def get_produtos(db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(ProdutoModel).order_by(ProdutoModel.id)
         result = await session.execute(query)
         produtos: List[ProdutoModel] = result.scalars().unique().all()
-        
+
         if produtos:
             return produtos
         else:
-            raise HTTPException(detail='Nenhum produto cadastrado.',
-                                status_code=status.HTTP_404_NOT_FOUND)
+            raise HTTPException(
+                detail="Nenhum produto cadastrado.",
+                status_code=status.HTTP_404_NOT_FOUND,
+            )
 
 
 # GET Produto
-@router.get('/{produto_id}', response_model=ProdutoSchema, status_code=status.HTTP_200_OK)
+@router.get(
+    "/{produto_id}", response_model=ProdutoSchema, status_code=status.HTTP_200_OK
+)
 async def get_produto(produto_id: int, db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(ProdutoModel).filter(ProdutoModel.id == produto_id)
@@ -60,21 +80,33 @@ async def get_produto(produto_id: int, db: AsyncSession = Depends(get_session)):
         if produto:
             return produto
         else:
-            raise HTTPException(detail='Produto não encontrado.',
-                                status_code=status.HTTP_404_NOT_FOUND)
+            raise HTTPException(
+                detail="Produto não encontrado.", status_code=status.HTTP_404_NOT_FOUND
+            )
 
 
 # PUT Produto
-@router.put('/{produto_id}', response_model=ProdutoSchemaBase, status_code=status.HTTP_202_ACCEPTED)
-async def put_produto(produto_id: int, produto: ProdutoSchemaUp, usuario_logado: UsuarioModel = Depends(get_current_user), db: AsyncSession = Depends(get_session)):
+@router.put(
+    "/{produto_id}",
+    response_model=ProdutoSchemaBase,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def put_produto(
+    produto_id: int,
+    produto: ProdutoSchemaUp,
+    usuario_logado: UsuarioModel = Depends(get_current_user),
+    db: AsyncSession = Depends(get_session),
+):
     async with db as session:
         query = select(ProdutoModel).filter(ProdutoModel.id == produto_id)
         result = await session.execute(query)
         produto_up: ProdutoModel = result.scalars().unique().one_or_none()
 
         if usuario_logado.permissao_id != 1:
-            raise HTTPException(detail='O usuário logado não tem permissão para editar produtos.',
-                                    status_code=status.HTTP_401_UNAUTHORIZED)
+            raise HTTPException(
+                detail="O usuário logado não tem permissão para editar produtos.",
+                status_code=status.HTTP_401_UNAUTHORIZED,
+            )
 
         if produto_up:
             if produto.nome:
@@ -97,31 +129,40 @@ async def put_produto(produto_id: int, produto: ProdutoSchemaUp, usuario_logado:
 
                 return produto_up
             except IntegrityError:
-                raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE,
-                                    detail='Os dados inseridos são inválidos.')
+                raise HTTPException(
+                    status_code=status.HTTP_406_NOT_ACCEPTABLE,
+                    detail="Os dados inseridos são inválidos.",
+                )
         else:
-            raise HTTPException(detail='Produto não encontrado.',
-                                status_code=status.HTTP_404_NOT_FOUND)
+            raise HTTPException(
+                detail="Produto não encontrado.", status_code=status.HTTP_404_NOT_FOUND
+            )
 
 
 # DELETE Produto
-@router.delete('/{produto_id}', status_code=status.HTTP_204_NO_CONTENT)
-async def delete_produto(produto_id: int, usuario_logado: UsuarioModel = Depends(get_current_user), db: AsyncSession = Depends(get_session)):
+@router.delete("/{produto_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_produto(
+    produto_id: int,
+    usuario_logado: UsuarioModel = Depends(get_current_user),
+    db: AsyncSession = Depends(get_session),
+):
     async with db as session:
         query = select(ProdutoModel).filter(ProdutoModel.id == produto_id)
         result = await session.execute(query)
         produto_del: ProdutoModel = result.scalars().unique().one_or_none()
 
         if usuario_logado.permissao_id != 1:
-            raise HTTPException(detail='O usuário logado não tem permissão para deletar produtos.',
-                                    status_code=status.HTTP_401_UNAUTHORIZED)
-        
+            raise HTTPException(
+                detail="O usuário logado não tem permissão para deletar produtos.",
+                status_code=status.HTTP_401_UNAUTHORIZED,
+            )
+
         if produto_del:
             await session.delete(produto_del)
             await session.commit()
 
             return Response(status_code=status.HTTP_204_NO_CONTENT)
         else:
-            raise HTTPException(detail='Produto não encontrado.',
-                                status_code=status.HTTP_404_NOT_FOUND)
-        
+            raise HTTPException(
+                detail="Produto não encontrado.", status_code=status.HTTP_404_NOT_FOUND
+            )

@@ -1,6 +1,7 @@
-from typing import Optional
-from pydantic import BaseModel, EmailStr
 from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel, EmailStr
 
 
 class UsuarioSchemaBase(BaseModel):
@@ -30,4 +31,3 @@ class UsuarioSchemaUp(UsuarioSchemaBase):
     email: Optional[EmailStr]
     senha: Optional[str]
     permissao_id: Optional[int]
-    
