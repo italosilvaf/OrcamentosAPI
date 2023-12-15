@@ -11,8 +11,7 @@ from src.core.auth import autenticar, criar_token_acesso
 from src.core.deps import get_current_user, get_session
 from src.core.security import gerar_hash_senha
 from src.models.usuario_model import UsuarioModel
-from src.schemas.usuario_schema import (UsuarioSchema, UsuarioSchemaBase,
-                                        UsuarioSchemaUp)
+from src.schemas.usuario_schema import UsuarioSchema, UsuarioSchemaBase, UsuarioSchemaUp
 
 router = APIRouter()
 

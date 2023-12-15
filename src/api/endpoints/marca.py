@@ -7,8 +7,7 @@ from sqlalchemy.future import select
 from src.core.deps import get_current_user, get_session
 from src.models.marca_model import MarcaModel
 from src.models.usuario_model import UsuarioModel
-from src.schemas.marca_schema import (MarcaSchema, MarcaSchemaBase,
-                                      MarcaSchemaUp)
+from src.schemas.marca_schema import MarcaSchema, MarcaSchemaBase, MarcaSchemaUp
 
 router = APIRouter()
 

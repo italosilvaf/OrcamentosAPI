@@ -8,8 +8,11 @@ from sqlalchemy.future import select
 from src.core.deps import get_current_user, get_session
 from src.models.categoria_model import CategoriaModel
 from src.models.usuario_model import UsuarioModel
-from src.schemas.categoria_schema import (CategoriaSchema, CategoriaSchemaBase,
-                                          CategoriaSchemaUp)
+from src.schemas.categoria_schema import (
+    CategoriaSchema,
+    CategoriaSchemaBase,
+    CategoriaSchemaUp,
+)
 
 router = APIRouter()
 

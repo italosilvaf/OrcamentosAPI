@@ -1,5 +1,4 @@
-from sqlalchemy import (Column, DateTime, Float, ForeignKey, Integer, String,
-                        func)
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, func
 from sqlalchemy.orm import relationship
 
 from src.core.configs import settings
