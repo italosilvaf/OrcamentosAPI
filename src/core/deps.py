@@ -4,10 +4,10 @@ from jose import jwt, JWTError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from pydantic import BaseModel
-from core.database import Session
-from core.auth import oauth2_schema
-from core.configs import settings
-from models.usuario_model import UsuarioModel
+from src.core.database import Session
+from src.core.auth import oauth2_schema
+from src.core.configs import settings
+from src.models.usuario_model import UsuarioModel
 
 
 class TokenData(BaseModel):

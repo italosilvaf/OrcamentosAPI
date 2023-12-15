@@ -3,10 +3,10 @@ from fastapi import APIRouter, status, Depends, HTTPException, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
-from models.categoria_model import CategoriaModel
-from models.usuario_model import UsuarioModel
-from schemas.categoria_schema import CategoriaSchemaBase, CategoriaSchema, CategoriaSchemaUp
-from core.deps import get_session, get_current_user
+from src.models.categoria_model import CategoriaModel
+from src.models.usuario_model import UsuarioModel
+from src.schemas.categoria_schema import CategoriaSchemaBase, CategoriaSchema, CategoriaSchemaUp
+from src.core.deps import get_session, get_current_user
 
 
 router = APIRouter()

@@ -1,12 +1,12 @@
-from core.configs import settings
-from core.database import engine
-from models.categoria_model import CategoriaModel
-from models.marca_model import MarcaModel
-from models.produto_model import ProdutoModel
-from models.usuario_model import UsuarioModel
+from src.core.configs import settings
+from src.core.database import engine
+from src.models.categoria_model import CategoriaModel
+from src.models.marca_model import MarcaModel
+from src.models.produto_model import ProdutoModel
+from src.models.usuario_model import UsuarioModel
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
-from core.security import gerar_hash_senha
+from src.core.security import gerar_hash_senha
 
 async_session = sessionmaker(
     bind=create_async_engine(settings.DB_URL, echo=True),

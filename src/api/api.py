@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from api.endpoints import produto, categoria, marca, usuario
+from src.api.endpoints import produto, categoria, marca, usuario
 
 
 api_router = APIRouter()

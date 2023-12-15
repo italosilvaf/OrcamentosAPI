@@ -1,7 +1,7 @@
-from core.configs import settings
+from src.core.configs import settings
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, func
 from sqlalchemy.orm import relationship
-from models.permissao_model import PermissaoModel
+from src.models.permissao_model import PermissaoModel
 
 
 class UsuarioModel(settings.DBBaseModel):

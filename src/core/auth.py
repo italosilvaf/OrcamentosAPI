@@ -5,10 +5,10 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from jose import jwt
-from core.configs import settings
-from core.security import verificar_senha
+from src.core.configs import settings
+from src.core.security import verificar_senha
 from pydantic import EmailStr
-from models.usuario_model import UsuarioModel
+from src.models.usuario_model import UsuarioModel
 
 
 oauth2_schema = OAuth2PasswordBearer(

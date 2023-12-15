@@ -2,10 +2,10 @@ from typing import List
 from fastapi import APIRouter, status, Depends, HTTPException, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from models.marca_model import MarcaModel
-from models.usuario_model import UsuarioModel
-from schemas.marca_schema import MarcaSchemaBase, MarcaSchema, MarcaSchemaUp
-from core.deps import get_session, get_current_user
+from src.models.marca_model import MarcaModel
+from src.models.usuario_model import UsuarioModel
+from src.schemas.marca_schema import MarcaSchemaBase, MarcaSchema, MarcaSchemaUp
+from src.core.deps import get_session, get_current_user
 
 
 router = APIRouter()

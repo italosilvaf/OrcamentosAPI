@@ -1,12 +1,13 @@
-from core.configs import settings
-from core.database import engine
-from models.permissao_model import PermissaoModel
+from src.core.configs import settings
+from src.core.database import engine
+from src.models.permissao_model import PermissaoModel
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
+import asyncio
 
 
 async def criar_tabelas() -> None:
-    import models.__all_models
+    import src.models.__all_models
     print('Criando as tabelas no banco de dados.')
 
     async with engine.begin() as conn:
@@ -34,8 +35,9 @@ async def criar_permissoes() -> None:
     print('Permissões criadas com sucesso.')
 
 
-if __name__ == '__main__':
-    import asyncio
+async def main():
+    await criar_tabelas()
+    await criar_permissoes()
 
-    asyncio.run(criar_tabelas())
-    asyncio.run(criar_permissoes())
+if __name__ == '__main__':
+    asyncio.run(main())
