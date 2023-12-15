@@ -19,11 +19,11 @@ async def criar_tabelas() -> None:
 async def criar_permissoes() -> None:
     print('Criando as permissões no banco de dados.')
     async_session = sessionmaker(
-        bind=create_async_engine(settings.DB_URL, echo=True), 
+        bind=create_async_engine(settings.DB_URL, echo=True),
         class_=AsyncSession,
         expire_on_commit=False
     )
-    
+
     async with async_session() as session:
         permissao_admin = PermissaoModel(nome='admin')
         permissao_vendedor = PermissaoModel(nome='vendedor')
