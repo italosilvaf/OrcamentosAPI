@@ -16,3 +16,6 @@ install:
 
 pre-commits:
 	poetry run pre-commit run -a
+
+test:
+	pytest tests/endpoints/test_usuario.py

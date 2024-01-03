@@ -748,28 +748,28 @@ async def adicionar_usuarios(async_session) -> None:
 
     async with async_session as session:
         usuario_admin = UsuarioModel(
-            cpf="12221405609",
+            cpf="12345678909",
             nome="Italo",
             sobrenome="Silva Fernandes Admin",
-            telefone="34992127233",
+            telefone="34912345678",
             email="italoadmin@email.com",
             senha=gerar_hash_senha("290302"),
             permissao_id=1,
         )
         usuario_vendedor = UsuarioModel(
-            cpf="12221405609",
+            cpf="12345678909",
             nome="Italo",
             sobrenome="Silva Fernandes Vendedor",
-            telefone="34992127233",
+            telefone="34912345678",
             email="italovendedor@email.com",
             senha=gerar_hash_senha("290302"),
             permissao_id=2,
         )
         usuario_cliente = UsuarioModel(
-            cpf="12221405609",
+            cpf="12345678909",
             nome="Italo",
             sobrenome="Silva Fernandes Cliente",
-            telefone="34992127233",
+            telefone="34912345678",
             email="italocliente@email.com",
             senha=gerar_hash_senha("290302"),
             permissao_id=3,

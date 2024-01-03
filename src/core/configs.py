@@ -1,10 +1,11 @@
 from pydantic import BaseSettings
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 
 
 class Settings(BaseSettings):
     API_STR: str = "/api"
     DB_URL: str = "postgresql+asyncpg://postgres:root@localhost:5432/orcamentosapi"
+
     DBBaseModel = declarative_base()
 
     JWT_SECRET: str = "MKlIJdwqQXm93gg1vXFCLQejP8tIW24Nmu5bdSf3sm4"
